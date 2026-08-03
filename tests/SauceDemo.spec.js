@@ -1,41 +1,59 @@
 const { test, expect } = require('@playwright/test');
 
-test.describe('SauceDemo Login and Logout Tests', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('https://www.saucedemo.com/');
-  });
+// ponytail: Hardcoded selectors and test data used for quick verification. Ceiling: Hard to scale with dynamic items, roles, or multiple test flows. Upgrade path: Implement Page Object Model (POM) and use data-driven fixtures.
 
-  test('TC-LP-001: Verify login with valid credentials', async ({ page }) => {
+test.describe('SauceDemo Checkout Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    // Log in
+    await page.goto('https://www.saucedemo.com/');
     await page.fill('[data-test="username"]', 'standard_user');
     await page.fill('[data-test="password"]', 'secret_sauce');
     await page.click('[data-test="login-button"]');
 
-    await expect(page).toHaveURL(/.*inventory.html/);
-    await expect(page.locator('.inventory_list')).toBeVisible();
-    await page.screenshot({ path: 'screenshots/TC-LP-001.png' })
+    // Add item to cart
+    await page.click('[data-test="add-to-cart-sauce-labs-backpack"]');
+    
+    // Go to cart
+    await page.click('[data-test="shopping-cart-link"]');
   });
 
-  test('TC-LP-002: Verify login with incorrect password', async ({ page }) => {
-    await page.fill('[data-test="username"]', 'standard_user');
-    await page.fill('[data-test="password"]', 'wrong_password');
-    await page.click('[data-test="login-button"]');
+  test('TC-CKO-001: verify checkout button funcanlity (clickable + redirection) in cart page', async ({ page }) => {
+    // Click on Checkout button
+    await page.click('[data-test="checkout"]');
+    
+    // Verify redirection to the Checkout: Your Information page
+    await expect(page).toHaveURL(/.*checkout-step-one.html/);
+    await page.screenshot({ path: 'screenshots/TC-CKO-001.png' });
+  });
 
+  test('TC-CKO-002: Register in Checkout: Your Information page using valid inputs', async ({ page }) => {
+    // Click on Checkout button
+    await page.click('[data-test="checkout"]');
+    
+    // Enter first name, last name, and postal code
+    await page.fill('[data-test="firstName"]', 'omar');
+    await page.fill('[data-test="lastName"]', 'abdo');
+    await page.fill('[data-test="postalCode"]', '12345');
+    
+    // Click Continue
+    await page.click('[data-test="continue"]');
+    
+    // Verify redirection to Checkout: Overview page
+    await expect(page).toHaveURL(/.*checkout-step-two.html/);
+    await page.screenshot({ path: 'screenshots/TC-CKO-002.png' });
+  });
+
+  test('TC-CKO-003: Register in Checkout: Your Information page without filling mandatory fields', async ({ page }) => {
+    // Click on Checkout button
+    await page.click('[data-test="checkout"]');
+    
+    // Click the Continue button without entering any details
+    await page.click('[data-test="continue"]');
+    
+    // Verify error message appears: "Error: First Name is required"
     const errorLocator = page.locator('[data-test="error"]');
     await expect(errorLocator).toBeVisible();
-    await expect(errorLocator).toContainText('Username and password do not match');
-    await page.screenshot({ path: 'screenshots/TC-LP-002.png' })
-  });
-
-  test('TC-LP-003: Verify logout functionality', async ({ page }) => {
-    await page.fill('[data-test="username"]', 'standard_user');
-    await page.fill('[data-test="password"]', 'secret_sauce');
-    await page.click('[data-test="login-button"]');
-
-    await page.click('#react-burger-menu-btn');
-    await page.click('#logout_sidebar_link');
-
-    await expect(page).toHaveURL('https://www.saucedemo.com/');
-    await expect(page.locator('[data-test="login-button"]')).toBeVisible();
-    await page.screenshot({ path: 'screenshots/TC-LP-003.png' })
+    await expect(errorLocator).toContainText('Error: First Name is required');
+    await page.screenshot({ path: 'screenshots/TC-CKO-003.png' });
   });
 });
