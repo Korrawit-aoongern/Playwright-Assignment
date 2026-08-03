@@ -1,0 +1,25 @@
+Test Case Id,Type,Automated Test,Smoke Test,Function Test,Test Case Name,Test Data,Pre Step,Test Step,Expected Result,Actual Result,Remark
+"When we buy coffee on the website, the website should calculate the correct total price and able to checkout",,,,,,,,,,,
+Coffee_001,Functional,TRUE,FALSE,Price Calculation,Verify the total price once buy one coffee,"URL: https://seleniumbase.io/coffee/
+Item_Buy: Cafe Latte",-,"1. Go to Coffee Cart
+2. Click Buy Item
+3. Click Cart
+4. Verify the total price [1]","[1] Verify the total price
+      - The total price should be equal the cafe latte price",,
+Coffee_002,Functional,TRUE,FALSE,Price Calculation,Verify the total price once buy three coffee,"URL: https://seleniumbase.io/coffee/
+Item_Buy1: Mocha
+Item_Buy2: Flat White
+Item_Buy3: Cappuccino",,"1. Go to Coffee Cart
+2. Click Buy Item 1
+3. Click Buy Item 2
+4. Click Buy Item 3
+5. Click Cart
+6. Verify the total price of three items [1]","[1] Verify the total price
+      - The total price should be equal the sum of three item prices",,
+Coffee_003,Functional,TRUE,FALSE,Price Calculation,Verify the total price once buy the same kind of coffee 2 unit,"URL: https://seleniumbase.io/coffee/
+Item_Buy: Americano - Unit 2",,"1. Go to Coffee Cart
+2. Click Buy Item 
+3. Click Cart
+4. Click Plus on the Item
+4. Verify the total price [1]","[1] Verify the total price
+      - The total price should be equal to double of price of the item",,
